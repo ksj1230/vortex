@@ -184,7 +184,8 @@ impl<T> BufferMut<T> {
     /// Reserves capacity for at least `additional` more elements to be inserted in the buffer.
     #[inline]
     pub fn reserve(&mut self, additional: usize) {
-        let additional_bytes = additional * size_of::<T>();
+        let additional_bytes = additional.checked_mul(size_of::<T>())
+        	.expect("reserve: overflow"); 
         if additional_bytes <= self.bytes.capacity() - self.bytes.len() {
             // We can fit the additional bytes in the remaining capacity. Nothing to do.
             return;
